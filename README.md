@@ -23,6 +23,30 @@ let found = ac.find_all("building valence in moonbit")  // ["valence", "moonbit"
 let has_match = ac.contains_any("this has an error in it")
 ```
 
+### Match positions
+
+Find where each match occurs in the text:
+
+```moonbit
+let ac = @aho_corasick.build(["cat", "dog"])
+let matches = ac.find_all_matches("the cat and the dog")
+// Match { pattern: "cat", start: 4, end: 7, .. }
+// Match { pattern: "dog", start: 16, end: 19, .. }
+```
+
+### Count, replace
+
+```moonbit
+let ac = @aho_corasick.build(["old", "stale"])
+
+// Count all occurrences
+ac.count("old is old and stale")  // 3
+
+// Replace matched patterns
+ac.replace("old is old and stale", ["new", "fresh"])
+// "new is new and fresh"
+```
+
 ### Case-insensitive matching
 
 Lowercase patterns at build time, lowercase text before searching:
@@ -47,18 +71,24 @@ let matches = ac.search_bytes(text, text.length())
 
 - **Build:** O(m) where m = total length of all patterns
 - **Search:** O(n + z) where n = text length, z = number of matches
-- **Space:** O(m × alphabet) for the goto table
+- **Space:** O(m x alphabet) for the goto table
 
 ## API
 
-- `build(patterns : Array[String]) -> AhoCorasick` — compile patterns into automaton
-- `AhoCorasick::search(text : String) -> Array[Int]` — matched pattern indices
-- `AhoCorasick::search_bytes(data : Bytes, len : Int) -> Array[Int]` — matched pattern indices on raw bytes
-- `AhoCorasick::find_all(text : String) -> Array[String]` — matched pattern strings
-- `AhoCorasick::contains_any(text : String) -> Bool` — any match (short-circuits)
-- `AhoCorasick::contains_any_bytes(data : Bytes, len : Int) -> Bool` — any match on raw bytes
-- `AhoCorasick::state_count() -> Int` — number of automaton states
-- `AhoCorasick::pattern_count() -> Int` — number of patterns
+| Function | Returns | Description |
+|----------|---------|-------------|
+| `build(patterns)` | `AhoCorasick` | Compile patterns into automaton |
+| `.search(text)` | `Array[Int]` | Matched pattern indices (deduplicated) |
+| `.search_bytes(data, len)` | `Array[Int]` | Pattern indices on raw bytes |
+| `.find_all(text)` | `Array[String]` | Matched pattern strings |
+| `.find_all_matches(text)` | `Array[Match]` | All matches with positions |
+| `.find_all_matches_bytes(data, len)` | `Array[Match]` | Matches with byte positions |
+| `.contains_any(text)` | `Bool` | Any match (short-circuits) |
+| `.contains_any_bytes(data, len)` | `Bool` | Any match on bytes |
+| `.count(text)` | `Int` | Total occurrence count |
+| `.replace(text, replacements)` | `String` | Replace matches (longest-first) |
+| `.state_count()` | `Int` | Automaton states |
+| `.pattern_count()` | `Int` | Number of patterns |
 
 ## License
 

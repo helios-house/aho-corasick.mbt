@@ -114,3 +114,76 @@ test "many patterns" {
   assert_true(found.contains("theta"))
   assert_false(found.contains("omega"))
 }
+
+test "find_all_matches returns positions" {
+  let ac = build(["cat", "dog"])
+  let matches = ac.find_all_matches("the cat and the dog")
+  assert_eq(matches.length(), 2)
+  assert_eq(matches[0].pattern, "cat")
+  assert_eq(matches[0].start, 4)
+  assert_eq(matches[0].end, 7)
+  assert_eq(matches[1].pattern, "dog")
+  assert_eq(matches[1].start, 16)
+  assert_eq(matches[1].end, 19)
+}
+
+test "find_all_matches overlapping" {
+  let ac = build(["the", "he"])
+  let matches = ac.find_all_matches("the")
+  assert_eq(matches.length(), 2)
+  let patterns : Array[String] = matches.map(fn(m) { m.pattern })
+  assert_true(patterns.contains("the"))
+  assert_true(patterns.contains("he"))
+}
+
+test "find_all_matches repeated" {
+  let ac = build(["ab"])
+  let matches = ac.find_all_matches("ababab")
+  assert_eq(matches.length(), 3)
+  assert_eq(matches[0].start, 0)
+  assert_eq(matches[1].start, 2)
+  assert_eq(matches[2].start, 4)
+}
+
+test "find_all_matches_bytes" {
+  let ac = build(["cat", "dog"])
+  let matches = ac.find_all_matches_bytes(b"the cat and the dog", 19)
+  assert_eq(matches.length(), 2)
+  assert_eq(matches[0].start, 4)
+  assert_eq(matches[1].start, 16)
+}
+
+test "count matches" {
+  let ac = build(["ab"])
+  assert_eq(ac.count("ababab"), 3)
+  assert_eq(ac.count("no match"), 0)
+}
+
+test "count overlapping" {
+  let ac = build(["the", "he"])
+  assert_eq(ac.count("the other"), 4)
+}
+
+test "replace basic" {
+  let ac = build(["cat", "dog"])
+  let result = ac.replace("the cat and the dog", ["feline", "canine"])
+  assert_eq(result, "the feline and the canine")
+}
+
+test "replace no match" {
+  let ac = build(["cat"])
+  let result = ac.replace("no match here", ["feline"])
+  assert_eq(result, "no match here")
+}
+
+test "replace overlapping prefers longest" {
+  let ac = build(["ab", "abc"])
+  let result = ac.replace("abc", ["X", "Y"])
+  assert_eq(result, "Y")
+}
+
+test "replace multiple occurrences" {
+  let ac = build(["old"])
+  let result = ac.replace("old is old and old", ["new"])
+  assert_eq(result, "new is new and new")
+}
