@@ -1,8 +1,8 @@
 {
   "name": "helios-house/aho-corasick",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "readme": "README.md",
-  "repository": "https://github.com/helios-house/aho-corasick",
+  "repository": "https://github.com/helios-house/aho-corasick.mbt",
   "license": "Apache-2.0",
   "keywords": [
     "string-matching",

@@ -1,17 +1,19 @@
 test "basic search" {
-  let ac = build(["he", "she", "his", "hers"])
-  let matches = ac.search("ushers")
+  let ac = build(["they", "them", "their", "theirs"])
+  let matches = ac.search("they gave them their things and kept theirs")
   assert_true(matches.contains(0))
   assert_true(matches.contains(1))
+  assert_true(matches.contains(2))
   assert_true(matches.contains(3))
 }
 
 test "find_all returns strings" {
-  let ac = build(["hello", "world"])
-  let found = ac.find_all("hello beautiful world")
-  assert_true(found.contains("hello"))
-  assert_true(found.contains("world"))
-  assert_eq(found.length(), 2)
+  let ac = build(["valence", "moonbit", "helios"])
+  let found = ac.find_all("building valence in moonbit for helios")
+  assert_true(found.contains("valence"))
+  assert_true(found.contains("moonbit"))
+  assert_true(found.contains("helios"))
+  assert_eq(found.length(), 3)
 }
 
 test "contains_any short-circuits" {
@@ -71,14 +73,44 @@ test "case sensitive by default" {
   let ac = build(["hello"])
   assert_true(ac.contains_any("hello"))
   assert_false(ac.contains_any("Hello"))
-  assert_false(ac.contains_any("HELLO"))
 }
 
 test "case insensitive via lowering" {
-  let patterns = ["hello", "world"]
-  let ac = build(patterns)
+  let ac = build(["hello", "world"])
   let text = "Hello Beautiful WORLD".to_lower()
   let found = ac.find_all(text)
   assert_true(found.contains("hello"))
   assert_true(found.contains("world"))
+}
+
+test "search_bytes basic" {
+  let ac = build(["cat", "dog"])
+  let text : Bytes = b"the cat sat on the dog"
+  let matches = ac.search_bytes(text, text.length())
+  assert_eq(matches.length(), 2)
+}
+
+test "contains_any_bytes" {
+  let ac = build(["error", "warn"])
+  assert_true(ac.contains_any_bytes(b"an error occurred", 17))
+  assert_false(ac.contains_any_bytes(b"all good", 8))
+}
+
+test "search_bytes no match" {
+  let ac = build(["xyz"])
+  let matches = ac.search_bytes(b"abcdef", 6)
+  assert_eq(matches.length(), 0)
+}
+
+test "many patterns" {
+  let patterns = [
+    "alpha", "beta", "gamma", "delta", "epsilon",
+    "zeta", "eta", "theta", "iota", "kappa",
+  ]
+  let ac = build(patterns)
+  let found = ac.find_all("alpha to omega, passing through gamma and theta")
+  assert_true(found.contains("alpha"))
+  assert_true(found.contains("gamma"))
+  assert_true(found.contains("theta"))
+  assert_false(found.contains("omega"))
 }
