@@ -1,0 +1,15 @@
+{
+  "name": "helios-house/aho-corasick",
+  "version": "0.1.0",
+  "readme": "README.md",
+  "repository": "https://github.com/helios-house/aho-corasick",
+  "license": "Apache-2.0",
+  "keywords": [
+    "string-matching",
+    "aho-corasick",
+    "multi-pattern",
+    "text-search",
+    "algorithm"
+  ],
+  "description": "Aho-Corasick multi-pattern string matching algorithm for MoonBit"
+}
