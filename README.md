@@ -67,6 +67,21 @@ let text : Bytes = b"the cat sat on the dog"
 let matches = ac.search_bytes(text, text.length())
 ```
 
+### Native acceleration (C flat-array automaton)
+
+On native target, use the C-backed functions for maximum speed. Flat-array goto table, zero allocation during search, built-in ASCII case folding:
+
+```moonbit
+let ac = @aho_corasick.build(["error", "warn", "info"])
+ac.build_native()  // builds the C-side automaton
+let matches = ac.search_native("ERROR: connection INFO lost")  // case-insensitive
+let found = ac.contains_any_native("a fatal warning")  // short-circuits
+let n = ac.count_native("ab ab ab")  // total occurrences
+let positions = ac.find_all_matches_native("the cat and the dog")  // with positions
+```
+
+Available on native target only. Wasm-gc and JS targets use the pure MoonBit implementation automatically.
+
 ## Complexity
 
 - **Build:** O(m) where m = total length of all patterns
@@ -89,6 +104,11 @@ let matches = ac.search_bytes(text, text.length())
 | `.replace(text, replacements)` | `String` | Replace matches (longest-first) |
 | `.state_count()` | `Int` | Automaton states |
 | `.pattern_count()` | `Int` | Number of patterns |
+| `.build_native()` | `Unit` | Build C automaton (native only) |
+| `.search_native(text)` | `Array[Int]` | C-backed search with case folding (native only) |
+| `.contains_any_native(text)` | `Bool` | C-backed short-circuit (native only) |
+| `.count_native(text)` | `Int` | C-backed count (native only) |
+| `.find_all_matches_native(text)` | `Array[Match]` | C-backed with positions (native only) |
 
 ## License
 

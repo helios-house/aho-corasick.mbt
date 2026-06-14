@@ -1,1 +1,9 @@
 import {}
+
+options(
+  "native-stub": [ "aho_corasick_native.c" ],
+  targets: {
+    "native.mbt": [ "native" ],
+    "native_test.mbt": [ "native" ],
+  },
+)
